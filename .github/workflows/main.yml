@@ -37,9 +37,9 @@ jobs:
       run: ./gradlew dependencies
     # ここでssh
     - name: Start SSH via ngrok
-        uses: P3TERX/ssh2actions@main
-        with:
-          mode: ngrok
+      uses: P3TERX/ssh2actions@main
+      with:
+        mode: ngrok
         env:
           # After sign up on the https://ngrok.com
           # You can find this token here: https://dashboard.ngrok.com/auth/your-authtoken
