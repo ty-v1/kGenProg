@@ -7,13 +7,16 @@ on:
 
 jobs:
   run-unit-tests:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.platform }}
     timeout-minutes: 15
     env:
       JAVA_OPTS: -Xmx3200m
       TERM: dumb
     strategy:
       fail-fast: false
+      matrix:
+        java: ['11']
+        platform: [windows-latest]
     steps:
     - name: Git checkout
       uses: actions/checkout@v2
@@ -31,25 +34,9 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 11
+        java-version: ${{ matrix.java }}
     - name: Resolve dependencies
       if: steps.cache-dependencies.outputs.cache-hit != 'true'
       run: ./gradlew dependencies
-    # ここでssh
-    - name: Start SSH via ngrok
-      uses: P3TERX/ssh2actions@main
-      with:
-        mode: ngrok
-      env:
-          # After sign up on the https://ngrok.com
-          # You can find this token here: https://dashboard.ngrok.com/auth/your-authtoken
-        NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
-
-          # ngrok server region [us, eu, au, ap, sa, jp, in] (optional, default: us)
-          # You can find this server region here: https://ngrok.com/docs#global-locations
-        NGROK_REGION: jp
-
-          # This password you will use when authorizing via SSH
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
     - name: Execute tests
       run: ./gradlew test
