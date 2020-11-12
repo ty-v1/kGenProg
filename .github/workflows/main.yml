@@ -15,28 +15,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['11']
-        platform: [windows-latest]
+        java: ['11', '12', '13']
+        platform: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-    - name: Git checkout
-      uses: actions/checkout@v2
-    - name: Cache dependencies
-      id: cache-dependencies
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-dependencies
-      with:
-        path: ~/.gradle/caches
-        key: build-cache-${{ hashFiles('build.gradle') }}
-        restore-keys: |
-          build-cache-
-          build-
-    - name: Set up JDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{ matrix.java }}
-    - name: Resolve dependencies
-      if: steps.cache-dependencies.outputs.cache-hit != 'true'
-      run: ./gradlew dependencies
-    - name: Execute tests
-      run: ./gradlew test
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Cache dependencies
+        id: cache-dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-dependencies
+        with:
+          path: ~/.gradle/caches
+          key: build-cache-${{ hashFiles('build.gradle') }}
+          restore-keys: |
+            build-cache-
+            build-
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Resolve dependencies
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        run: ./gradlew dependencies
+      - name: Execute tests
+        run: ./gradlew test
